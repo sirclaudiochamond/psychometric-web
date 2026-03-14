@@ -3,7 +3,7 @@ import streamlit as st
 # --- 1. CONFIGURACIÓN ---
 st.set_page_config(page_title="PsychoMetric | Inteligencia Clínica", page_icon="🧠", layout="centered")
 
-# --- 2. CSS PROFESIONAL ---
+# --- 2. CSS PROFESIONAL (AUDITADO) ---
 st.markdown("""
     <style>
     .stApp { background-color: #FFFFFF !important; }
@@ -17,6 +17,7 @@ st.markdown("""
         box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
         margin-bottom: 20px !important;
     }
+    .feature-card b { color: #1E40AF !important; font-size: 1.1em; }
 
     .result-box {
         background-color: #FFFFFF !important;
@@ -44,6 +45,7 @@ st.markdown("""
         border-radius: 8px !important; 
         border: none !important; 
         text-transform: uppercase;
+        letter-spacing: 1px;
     }
     .stButton>button div p { color: #FFFFFF !important; }
 
@@ -55,10 +57,20 @@ st.markdown("""
         padding: 20px;
         border-top: 1px solid #F1F5F9;
     }
+    
+    .price-tag {
+        background-color: #EFF6FF;
+        color: #1E40AF;
+        padding: 10px;
+        border-radius: 5px;
+        font-weight: bold;
+        text-align: center;
+        margin: 10px 0;
+        border: 1px dashed #2563EB;
+    }
     </style>
     """, unsafe_allow_html=True)
 
-# --- TEXTO DEL DISCLAIMER ---
 DISCLAIMER_TEXT = "<b>AVISO LEGAL:</b> PsychoMetric es una herramienta de digitalización y tamizaje técnico basado en protocolos internacionales. Los resultados aquí presentados son indicadores de sospecha clínica y no constituyen un diagnóstico médico, psiquiátrico ni psicológico vinculante. Esta información debe ser revisada y validada por un profesional de la salud mental calificado. El uso de esta aplicación no reemplaza la consulta clínica presencial."
 
 # --- 3. BASE DE DATOS CLÍNICA ---
@@ -110,14 +122,17 @@ if 'etapa' not in st.session_state: st.session_state.etapa = 'landing'
 if st.session_state.etapa == 'landing':
     st.markdown("<h1 style='text-align:center;'>PSYCHO<span style='color:#2563EB'>METRIC</span></h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align:center; font-size:11px; letter-spacing:3px; color:#2563EB !important; font-weight:bold;'>INTELIGENCIA CLÍNICA AVANZADA</p>", unsafe_allow_html=True)
+    
     st.markdown("### ¿Qué es PsychoMetric?")
-    st.write("Plataforma de digitalización de tamizaje profesional bajo estándares internacionales.")
+    st.write("Es la plataforma líder en digitalización de tamizaje profesional. Utilizamos protocolos internacionales para mapear salud mental en 13 dimensiones críticas.")
 
     col1, col2 = st.columns(2)
     with col1:
-        st.markdown("<div class='feature-card'><b>🔬 Rigor Técnico</b><br><small>Procesamiento basado en protocolos de psiquiatría moderna.</small></div>", unsafe_allow_html=True)
+        st.markdown("<div class='feature-card'><b>🔬 Precisión Clínica</b><br><small>Validado bajo estándares internacionales para asegurar rigor técnico.</small></div>", unsafe_allow_html=True)
+        st.markdown("<div class='feature-card'><b>⚡ Reporte Inmediato</b><br><small>Algoritmos de procesamiento de datos para resultados al instante.</small></div>", unsafe_allow_html=True)
     with col2:
-        st.markdown("<div class='feature-card'><b>📊 Certificado</b><br><small>Documento técnico listo para interconsulta profesional.</small></div>", unsafe_allow_html=True)
+        st.markdown("<div class='feature-card'><b>🔒 Privacidad Blindada</b><br><small>Protocolos de seguridad para la protección total de datos sensibles.</small></div>", unsafe_allow_html=True)
+        st.markdown("<div class='feature-card'><b>📊 Certificado Profesional</b><br><small>Documento técnico descargable listo para interconsulta médica.</small></div>", unsafe_allow_html=True)
 
     if st.button("INICIAR EVALUACIÓN PROFESIONAL"):
         st.session_state.etapa = 'test'
@@ -144,12 +159,12 @@ elif st.session_state.etapa == 'reporte':
     for p in PREGUNTAS: dom_puntos[p['dom']].append(res[p['id']])
 
     hallazgos = [dom for dom, puntos in dom_puntos.items() if (sum(puntos)/len(puntos)) >= 1]
-    resumen_txt = f"El procesamiento de datos indica indicadores significativos en {len(hallazgos)} de las 13 dimensiones." if hallazgos else "No se detectaron indicadores clínicos de riesgo en las 13 dimensiones."
+    resumen_txt = f"El procesamiento de datos indica la presencia de indicadores significativos en {len(hallazgos)} de las 13 dimensiones evaluadas." if hallazgos else "El tamizaje no reporta indicadores clínicos de riesgo en las 13 dimensiones evaluadas."
 
     st.markdown("<h2 style='text-align:center;'>Mapeo de Indicadores Clínicos</h2>", unsafe_allow_html=True)
     st.markdown(f"<p style='text-align:center;'><i>{resumen_txt}</i></p>", unsafe_allow_html=True)
     
-    html_descarga = f"""<div style="font-family:Arial; padding:30px;"><h1 style="color:#1E40AF;">PSYCHOMETRIC</h1><hr><p>{resumen_txt}</p>"""
+    html_descarga = f"""<div style="font-family:Arial; padding:30px;"><h1 style="color:#1E40AF;">PSYCHOMETRIC</h1><hr><p>{resumen_txt}</p><h3>DETALLE POR DIMENSIÓN EVALUADA:</h3>"""
 
     for dom, puntos in dom_puntos.items():
         avg = sum(puntos)/len(puntos)
@@ -162,5 +177,10 @@ elif st.session_state.etapa == 'reporte':
 
     html_descarga += f"<br><hr><p style='font-size:10px;'>{DISCLAIMER_TEXT}</p></div>"
     
-    st.download_button("📥 DESCARGAR INFORME CERTIFICADO (.HTML)", data=f"<html><body>{html_descarga}</body></html>", file_name="Certificado_PsychoMetric.html", mime="text/html")
+    st.write("---")
+    st.markdown("<p style='text-align:center; font-weight:bold;'>PARA DESCARGAR SU CERTIFICADO TÉCNICO OFICIAL</p>", unsafe_allow_html=True)
+    st.markdown("<div class='price-tag'>OFERTA DE LANZAMIENTO: $990 CLP</div>", unsafe_allow_html=True)
+    
+    # El botón de descarga actúa como el cierre de la oferta
+    st.download_button("📥 PAGAR Y DESCARGAR CERTIFICADO PROFESIONAL", data=f"<html><body>{html_descarga}</body></html>", file_name="Certificado_PsychoMetric.html", mime="text/html")
     st.markdown(f"<div class='disclaimer'>{DISCLAIMER_TEXT}</div>", unsafe_allow_html=True)
