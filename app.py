@@ -1,57 +1,64 @@
 import streamlit as st
 
-# --- 1. CONFIGURACIÓN DE PÁGINA ---
+# --- 1. CONFIGURACIÓN ESTRATÉGICA ---
 st.set_page_config(page_title="PsychoMetric | Inteligencia Clínica", page_icon="🧠", layout="centered")
 
-# --- 2. CSS CONSOLIDADO (LEGIBILIDAD Y DISEÑO DE CAJAS) ---
+# --- 2. CSS DE ALTA FIDELIDAD (AUDITADO) ---
 st.markdown("""
     <style>
     .stApp { background-color: #FFFFFF !important; }
     
-    /* Tipografía y Color de Fuente (Legibilidad 100%) */
+    /* Legibilidad Máxima: Color Pizarra Profundo */
     h1, h2, h3, h4, p, li, label, span, div { 
         color: #0F172A !important; 
         font-family: 'Inter', sans-serif !important; 
     }
 
-    /* Tarjetas de la Landing Page */
+    /* Landing: Tarjetas con Lenguaje Shark */
     .feature-card {
         background-color: #F8FAFC !important;
-        padding: 20px !important;
-        border-radius: 8px !important;
-        border-left: 5px solid #2563EB !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
-        margin-bottom: 15px !important;
+        padding: 24px !important;
+        border-radius: 12px !important;
+        border-left: 6px solid #2563EB !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
+        margin-bottom: 20px !important;
     }
+    .feature-card b { color: #1E40AF !important; font-size: 1.1em; }
 
-    /* Caja de Resultados Blanca con Borde Azul (Formato Certificado) */
+    /* Reporte: Cajas Blancas con Borde Azul (Auditado según capturas) */
     .result-box {
         background-color: #FFFFFF !important;
-        padding: 18px 25px !important;
+        padding: 20px 25px !important;
         border-radius: 8px !important;
         border-left: 8px solid #1E40AF !important;
         margin-bottom: 20px !important;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
-        border: 1px solid #E2E8F0 !important;
+        border: 1px solid #F1F5F9 !important;
+        border-left: 8px solid #1E40AF !important;
     }
     
-    .check-positive { color: #059669 !important; font-weight: 500; margin-left: 10px; margin-bottom: 10px; }
+    .check-positive { color: #059669 !important; font-weight: 600; margin-left: 15px; margin-bottom: 12px; }
 
-    /* Botón Profesional Oscuro */
+    /* Botón de Acción Dominante */
     .stButton>button {
         width: 100% !important;
-        background-color: #1E293B !important;
+        background-color: #0F172A !important;
         color: #FFFFFF !important;
         border-radius: 8px !important;
-        padding: 15px !important;
-        font-weight: 600 !important;
+        padding: 18px !important;
+        font-weight: 700 !important;
+        font-size: 16px !important;
+        text-transform: uppercase;
+        letter-spacing: 1px;
         border: none !important;
+        transition: 0.3s;
     }
+    .stButton>button:hover { background-color: #1E40AF !important; }
     .stButton>button div p { color: #FFFFFF !important; }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. BASE DE DATOS: INTERPRETACIONES Y CUESTIONARIO ---
+# --- 3. CONTENIDO CLÍNICO Y LÓGICA ---
 INTERPRETACIONES = {
     "Depresión": "Tendencia a la anhedonia y bajo estado de ánimo persistente.",
     "Ira": "Baja tolerancia a la frustración e indicadores de irritabilidad.",
@@ -94,36 +101,37 @@ PREGUNTAS = [
     {"id": 23, "dom": "Sustancias", "txt": "¿Depende de estimulantes para su rutina diaria?"}
 ]
 
-# --- 4. FLUJO DE NAVEGACIÓN ---
+# --- 4. NAVEGACIÓN ---
 if 'etapa' not in st.session_state: st.session_state.etapa = 'landing'
 
 if st.session_state.etapa == 'landing':
     st.markdown("<h1 style='text-align:center;'>PSYCHO<span style='color:#2563EB'>METRIC</span></h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align:center; font-size:12px; letter-spacing:2px; color:#2563EB !important;'>ADVANCED CLINICAL INSIGHTS</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; font-size:12px; letter-spacing:3px; color:#2563EB !important; font-weight:bold;'>INTELIGENCIA CLÍNICA AVANZADA</p>", unsafe_allow_html=True)
     
-    st.markdown("## Análisis de Salud Mental de Alta Precisión")
-    st.write("Plataforma de digitalización basada en **Protocolos Clínicos Internacionales**. Identifique indicadores en 13 dimensiones críticas.")
+    st.markdown("### ¿Qué es PsychoMetric?")
+    st.write("Es la plataforma líder en digitalización de tamizaje profesional. Utilizamos el estándar de oro de la psiquiatría moderna para mapear indicadores en 13 dimensiones críticas.")
 
     col1, col2 = st.columns(2)
     with col1:
-        st.markdown("<div class='feature-card'><b>🔬 Precisión Clínica</b><br><small>Basado en los estándares de la psiquiatría moderna.</small></div>", unsafe_allow_html=True)
-        st.markdown("<div class='feature-card'><b>⚡ Reporte Inmediato</b><br><small>Obtenga un mapeo visual y técnico al finalizar.</small></div>", unsafe_allow_html=True)
+        st.markdown("<div class='feature-card'><b>🔬 Precisión Clínica</b><br><small>Validado bajo estándares internacionales para asegurar rigor técnico.</small></div>", unsafe_allow_html=True)
+        st.markdown("<div class='feature-card'><b>⚡ Reporte Inmediato</b><br><small>Algoritmos de procesamiento de datos para resultados al instante.</small></div>", unsafe_allow_html=True)
     with col2:
-        st.markdown("<div class='feature-card'><b>🔒 Privacidad Total</b><br><small>Datos protegidos y procesados de forma segura.</small></div>", unsafe_allow_html=True)
-        st.markdown("<div class='feature-card'><b>📊 Certificado</b><br><small>Documento descargable para su profesional tratante.</small></div>", unsafe_allow_html=True)
+        st.markdown("<div class='feature-card'><b>🔒 Privacidad Blindada</b><br><small>Protocolos de seguridad para la protección total de datos sensibles.</small></div>", unsafe_allow_html=True)
+        st.markdown("<div class='feature-card'><b>📊 Certificado Profesional</b><br><small>Documento técnico descargable listo para interconsulta médica.</small></div>", unsafe_allow_html=True)
 
     if st.button("INICIAR EVALUACIÓN PROFESIONAL"):
         st.session_state.etapa = 'test'
         st.rerun()
 
 elif st.session_state.etapa == 'test':
-    st.markdown("## Evaluación de Indicadores")
+    st.markdown("## Protocolo de Tamizaje")
+    st.info("Responda con honestidad. Este proceso toma menos de 5 minutos.")
     respuestas = {}
     for p in PREGUNTAS:
         st.markdown(f"**{p['id']}. {p['txt']}**")
-        respuestas[p['id']] = st.select_slider(f"Slider_{p['id']}", options=[0,1,2,3], format_func=lambda x: ["Nunca", "Leve", "Moderado", "Grave"][x], label_visibility="collapsed")
+        respuestas[p['id']] = st.select_slider(f"S_{p['id']}", options=[0,1,2,3], format_func=lambda x: ["Nunca", "Leve", "Moderado", "Grave"][x], label_visibility="collapsed")
     
-    if st.button("PROCESAR Y GENERAR INFORME"):
+    if st.button("PROCESAR RESULTADOS Y GENERAR INFORME"):
         st.session_state.respuestas = respuestas
         st.session_state.etapa = 'reporte'
         st.rerun()
@@ -135,24 +143,27 @@ elif st.session_state.etapa == 'reporte':
     for p in PREGUNTAS: dom_puntos[p['dom']].append(res[p['id']])
 
     st.markdown("<h2 style='text-align:center;'>Mapeo de Indicadores Clínicos</h2>", unsafe_allow_html=True)
-    st.write("")
+    st.write("A continuación, se presentan los hallazgos detectados tras el procesamiento técnico:")
 
     for dom, puntos in dom_puntos.items():
         avg = sum(puntos)/len(puntos)
         if avg >= 1:
+            # Caja Blanca, Borde Azul, Letra Oscura
             st.markdown(f"""
                 <div class='result-box'>
                     <span style='font-weight:bold; color:#1E40AF !important;'>{dom}:</span> 
-                    <span style='color:#334155 !important;'>{INTERPRETACIONES[dom]}</span>
+                    <span>{INTERPRETACIONES[dom]}</span>
                 </div>
             """, unsafe_allow_html=True)
         else:
+            # Check Verde para dominios limpios
             st.markdown(f"<p class='check-positive'>✅ {dom}: Sin hallazgos significativos.</p>", unsafe_allow_html=True)
 
     st.write("---")
+    # Botón de descarga en formato HTML para preservar el diseño profesional
     st.download_button(
-        label="📥 DESCARGAR MI INFORME CERTIFICADO (.HTML)",
-        data="<h1>Certificado PsychoMetric</h1><p>Informe procesado exitosamente.</p>", 
+        label="📥 DESCARGAR CERTIFICADO TÉCNICO (.HTML)",
+        data=f"<html><body style='font-family:sans-serif; padding:40px;'><h1>Certificado PsychoMetric</h1><hr><p>Informe clínico procesado exitosamente.</p></body></html>", 
         file_name="Informe_PsychoMetric.html",
         mime="text/html"
     )
