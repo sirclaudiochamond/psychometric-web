@@ -3,12 +3,13 @@ import streamlit as st
 # --- 1. CONFIGURACIÓN ---
 st.set_page_config(page_title="PsychoMetric | Inteligencia Clínica", page_icon="🧠", layout="centered")
 
-# --- 2. CSS PROFESIONAL (AUDITADO) ---
+# --- 2. CSS PROFESIONAL (AUDITADO PARA FIDELIDAD VISUAL) ---
 st.markdown("""
     <style>
     .stApp { background-color: #FFFFFF !important; }
     h1, h2, h3, h4, p, li, label, span, div { color: #0F172A !important; font-family: 'Inter', sans-serif !important; }
 
+    /* Landing: Tarjetas Shark */
     .feature-card {
         background-color: #F8FAFC !important;
         padding: 24px !important;
@@ -19,6 +20,7 @@ st.markdown("""
     }
     .feature-card b { color: #1E40AF !important; font-size: 1.1em; }
 
+    /* Reporte: Cajas de Hallazgos (Borde 8px) */
     .result-box {
         background-color: #FFFFFF !important;
         padding: 20px !important;
@@ -29,51 +31,29 @@ st.markdown("""
         border: 1px solid #F1F5F9 !important;
     }
     
-    .neutral-item { 
-        color: #64748B !important; 
-        font-size: 0.95em; 
-        margin-left: 10px;
-        margin-bottom: 8px; 
-    }
+    .neutral-item { color: #64748B !important; font-size: 0.95em; margin-left: 10px; margin-bottom: 8px; }
 
     .stButton>button { 
         width: 100% !important; 
         background-color: #0F172A !important; 
         color: #FFFFFF !important; 
-        font-weight: 700; 
-        padding: 15px !important; 
-        border-radius: 8px !important; 
-        border: none !important; 
-        text-transform: uppercase;
+        font-weight: 700; padding: 15px !important; border-radius: 8px !important; border: none !important; text-transform: uppercase;
         letter-spacing: 1px;
     }
     .stButton>button div p { color: #FFFFFF !important; }
 
-    .disclaimer {
-        font-size: 11px;
-        color: #94A3B8 !important;
-        text-align: justify;
-        margin-top: 40px;
-        padding: 20px;
-        border-top: 1px solid #F1F5F9;
-    }
+    .disclaimer { font-size: 11px; color: #94A3B8 !important; text-align: justify; margin-top: 40px; padding: 20px; border-top: 1px solid #F1F5F9; }
     
     .price-tag {
-        background-color: #EFF6FF;
-        color: #1E40AF;
-        padding: 10px;
-        border-radius: 5px;
-        font-weight: bold;
-        text-align: center;
-        margin: 10px 0;
-        border: 1px dashed #2563EB;
+        background-color: #EFF6FF; color: #1E40AF; padding: 15px; border-radius: 8px;
+        font-weight: bold; text-align: center; margin: 15px 0; border: 2px dashed #2563EB; font-size: 20px;
     }
     </style>
     """, unsafe_allow_html=True)
 
+# --- TEXTO UNIFICADO ---
 DISCLAIMER_TEXT = "<b>AVISO LEGAL:</b> PsychoMetric es una herramienta de digitalización y tamizaje técnico basado en protocolos internacionales. Los resultados aquí presentados son indicadores de sospecha clínica y no constituyen un diagnóstico médico, psiquiátrico ni psicológico vinculante. Esta información debe ser revisada y validada por un profesional de la salud mental calificado. El uso de esta aplicación no reemplaza la consulta clínica presencial."
 
-# --- 3. BASE DE DATOS CLÍNICA ---
 INTERPRETACIONES = {
     "Depresión": "Tendencia a la anhedonia y bajo estado de ánimo persistente.",
     "Ira": "Baja tolerancia a la frustración e indicadores de irritabilidad.",
@@ -116,8 +96,9 @@ PREGUNTAS = [
     {"id": 23, "dom": "Sustancias", "txt": "¿Depende de estimulantes para su rutina diaria?"}
 ]
 
-# --- 4. NAVEGACIÓN ---
+# --- 4. LÓGICA DE NAVEGACIÓN ---
 if 'etapa' not in st.session_state: st.session_state.etapa = 'landing'
+if 'pagado' not in st.session_state: st.session_state.pagado = False
 
 if st.session_state.etapa == 'landing':
     st.markdown("<h1 style='text-align:center;'>PSYCHO<span style='color:#2563EB'>METRIC</span></h1>", unsafe_allow_html=True)
@@ -153,13 +134,16 @@ elif st.session_state.etapa == 'test':
     st.markdown(f"<div class='disclaimer'>{DISCLAIMER_TEXT}</div>", unsafe_allow_html=True)
 
 elif st.session_state.etapa == 'reporte':
-    st.balloons()
     res = st.session_state.respuestas
     dom_puntos = {dom: [] for dom in INTERPRETACIONES.keys()}
     for p in PREGUNTAS: dom_puntos[p['dom']].append(res[p['id']])
 
     hallazgos = [dom for dom, puntos in dom_puntos.items() if (sum(puntos)/len(puntos)) >= 1]
-    resumen_txt = f"El procesamiento de datos indica la presencia de indicadores significativos en {len(hallazgos)} de las 13 dimensiones evaluadas." if hallazgos else "El tamizaje no reporta indicadores clínicos de riesgo en las 13 dimensiones evaluadas."
+    
+    if hallazgos:
+        resumen_txt = f"El procesamiento de datos indica la presencia de indicadores significativos en {len(hallazgos)} de las 13 dimensiones evaluadas. Se sugiere una revisión detallada de los puntos destacados."
+    else:
+        resumen_txt = "El tamizaje no reporta indicadores clínicos de riesgo en las 13 dimensiones evaluadas. El perfil se mantiene dentro de los rangos de funcionalidad reportados."
 
     st.markdown("<h2 style='text-align:center;'>Mapeo de Indicadores Clínicos</h2>", unsafe_allow_html=True)
     st.markdown(f"<p style='text-align:center;'><i>{resumen_txt}</i></p>", unsafe_allow_html=True)
@@ -178,9 +162,14 @@ elif st.session_state.etapa == 'reporte':
     html_descarga += f"<br><hr><p style='font-size:10px;'>{DISCLAIMER_TEXT}</p></div>"
     
     st.write("---")
-    st.markdown("<p style='text-align:center; font-weight:bold;'>PARA DESCARGAR SU CERTIFICADO TÉCNICO OFICIAL</p>", unsafe_allow_html=True)
-    st.markdown("<div class='price-tag'>OFERTA DE LANZAMIENTO: $990 CLP</div>", unsafe_allow_html=True)
+    if not st.session_state.pagado:
+        st.markdown("<p style='text-align:center; font-weight:bold;'>OBTENGA SU CERTIFICADO TÉCNICO COMPLETO</p>", unsafe_allow_html=True)
+        st.markdown("<div class='price-tag'>VALOR INFORME PROFESIONAL: $990 CLP</div>", unsafe_allow_html=True)
+        if st.button("💳 IR A PAGAR AHORA"):
+            st.session_state.pagado = True
+            st.rerun()
+    else:
+        st.success("¡Pago procesado con éxito!")
+        st.download_button("📥 DESCARGAR MI CERTIFICADO AHORA", data=f"<html><body>{html_descarga}</body></html>", file_name="Certificado_PsychoMetric.html", mime="text/html")
     
-    # El botón de descarga actúa como el cierre de la oferta
-    st.download_button("📥 PAGAR Y DESCARGAR CERTIFICADO PROFESIONAL", data=f"<html><body>{html_descarga}</body></html>", file_name="Certificado_PsychoMetric.html", mime="text/html")
     st.markdown(f"<div class='disclaimer'>{DISCLAIMER_TEXT}</div>", unsafe_allow_html=True)
