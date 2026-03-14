@@ -1,21 +1,21 @@
 import streamlit as st
 
-# --- 1. CONFIGURACIÓN DE IDENTIDAD ---
+# --- 1. CONFIGURACIÓN DE PÁGINA ---
 st.set_page_config(page_title="PsychoMetric | Inteligencia Clínica", page_icon="🧠", layout="centered")
 
-# --- 2. CSS DE ALTO IMPACTO (Estilo Shark Tank + Legibilidad Total) ---
+# --- 2. CSS DE ALTO IMPACTO (Solución definitiva a colores y legibilidad) ---
 st.markdown("""
     <style>
-    /* Reset Global */
+    /* Reset Global: Fuerza fondo blanco */
     .stApp { background-color: #FFFFFF !important; }
     
-    /* Forzar textos oscuros y nítidos */
+    /* Bloqueo de colores para textos (Legibilidad 100%) */
     h1, h2, h3, h4, p, li, span, label, div { 
         color: #0F172A !important; 
         font-family: 'Inter', sans-serif !important;
     }
 
-    /* Botón Shark Tank: El foco de la venta */
+    /* Botón Shark Tank: Azul Profesional con texto Blanco */
     .stButton>button {
         width: 100% !important;
         background: linear-gradient(135deg, #1E40AF 0%, #2563EB 100%) !important;
@@ -42,7 +42,7 @@ st.markdown("""
     }
     .value-card h4 { color: #2563EB !important; font-weight: 700 !important; margin-bottom: 10px !important; }
 
-    /* Estilo del Informe (Visualización) */
+    /* Estilo del Informe en Pantalla */
     .official-report {
         background: #FFFFFF !important;
         border: 2px solid #0F172A !important;
@@ -51,7 +51,7 @@ st.markdown("""
         box-shadow: 20px 20px 0px #F1F5F9 !important;
     }
 
-    /* Botón de Pago */
+    /* Botón de Pago (Mercado Pago) */
     .pay-link {
         display: block !important;
         text-align: center !important;
@@ -63,11 +63,12 @@ st.markdown("""
         font-size: 22px !important;
         text-decoration: none !important;
         box-shadow: 0 4px 14px rgba(0, 158, 227, 0.4) !important;
+        margin-top: 20px;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. DATOS Y LÓGICA ---
+# --- 3. BASE DE DATOS Y LÓGICA ---
 if 'etapa' not in st.session_state: st.session_state.etapa = 'landing'
 
 PREGUNTAS = [
@@ -119,24 +120,21 @@ if st.session_state.etapa == 'landing':
     st.markdown("<p style='text-align:center; font-weight:bold; letter-spacing:2px; color:#2563EB !important;'>SERVICIO DE DIGITALIZACIÓN Y ANÁLISIS PARA PSICÓLOGOS Y PACIENTES</p>", unsafe_allow_html=True)
     st.markdown("---")
 
-    # DISCURSO SHARK TANK
     st.markdown("### 🦈 Deja de adivinar. La salud mental no es un juego de azar.")
-    st.write("¿Sientes que algo no va bien pero no logras explicarlo? ¿Eres psicólogo y pierdes horas en el tamizaje inicial? PsychoMetric es la solución definitiva de **Inteligencia Clínica** que digitaliza y analiza tu perfil mental en solo 5 minutos.")
+    st.write("¿Sientes que algo no va bien pero no logras explicarlo? ¿Eres psicólogo y pierdes horas en el tamizaje inicial? PsychoMetric digitaliza y analiza tu perfil de indicadores en solo 5 minutos.")
 
     col1, col2 = st.columns(2)
     with col1:
-        st.markdown("""<div class='value-card'><h4>🎯 PARA TI</h4><p>Obtén un informe técnico que traduce tus síntomas a lenguaje clínico. La herramienta definitiva para llegar a tu terapia con respuestas, no con dudas.</p></div>""", unsafe_allow_html=True)
+        st.markdown("""<div class='value-card'><h4>🎯 PARA EL PACIENTE</h4><p>Obtén un informe técnico que traduce lo que sientes a lenguaje profesional. Llega a tu terapia con un mapeo claro de tus indicadores.</p></div>""", unsafe_allow_html=True)
     with col2:
-        st.markdown("""<div class='value-card'><h4>👨‍⚕️ PARA TU CLÍNICA</h4><p>Estandarice su práctica. Reciba a sus pacientes con una digitalización profesional de 13 dominios clínicos lista para su ficha médica.</p></div>""", unsafe_allow_html=True)
+        st.markdown("""<div class='value-card'><h4>👨‍⚕️ PARA EL PSICÓLOGO</h4><p>Estandarice su práctica clínica. Reciba a sus pacientes con un análisis de 13 dominios ya digitalizado y listo para su diagnóstico.</p></div>""", unsafe_allow_html=True)
 
     if st.button("OBTENER MI INFORME TÉCNICO AHORA"):
         st.session_state.etapa = 'test'
         st.rerun()
 
-    st.markdown("<p style='text-align:center; font-size:12px; color:#64748B !important; margin-top:20px;'>Protocolo de Digitalización Basado en Estándares Internacionales DSM-5-TR.</p>", unsafe_allow_html=True)
-
 elif st.session_state.etapa == 'test':
-    st.markdown("## Análisis de Dominios Clínicos")
+    st.markdown("## Protocolo de Evaluación de Indicadores")
     res = {}
     for p in PREGUNTAS:
         st.markdown(f"**{p['id']}. {p['txt']}**")
@@ -151,14 +149,14 @@ elif st.session_state.etapa == 'checkout':
     st.markdown("<h2 style='text-align:center;'>Perfil Procesado</h2>", unsafe_allow_html=True)
     st.markdown(f"""
     <div class='value-card' style='text-align:center;'>
-        <p>Su ingreso de datos ha sido validado. Para desbloquear el documento oficial:</p>
-        <h4 style='color:#2563EB !important;'>SERVICIO DE DIGITALIZACIÓN Y GENERACIÓN DE CERTIFICADO TÉCNICO</h4>
+        <p>Su ingreso de datos ha sido validado. El siguiente pago corresponde al:</p>
+        <h4 style='color:#2563EB !important;'>SERVICIO DE DIGITALIZACIÓN Y GENERACIÓN DE CERTIFICADO DE ANÁLISIS</h4>
         <h1 style='font-size:50px; margin:20px 0;'>$990 CLP</h1>
         <a href='https://link.mercadopago.cl/saludmentalsana' target='_blank' class='pay-link'>ADQUIRIR MI INFORME AHORA</a>
-        <p style='margin-top:15px; font-size:13px;'>* Tras el pago, presione el botón inferior para visualizar.</p>
+        <p style='margin-top:15px; font-size:13px;'>* Al finalizar el pago, presione el botón inferior para visualizar el documento.</p>
     </div>
     """, unsafe_allow_html=True)
-    if st.button("YA PAGUÉ - VER MI INFORME"):
+    if st.button("YA REALICÉ EL PAGO - VER MI INFORME"):
         st.session_state.etapa = 'reporte'
         st.rerun()
 
@@ -174,29 +172,36 @@ elif st.session_state.etapa == 'reporte':
         if avg >= 1:
             items_html += f"<li style='margin-bottom:12px;'><b>{dom}:</b> {INTERPRETACIONES[dom]}</li>"
 
-    # HTML DEL CERTIFICADO (Con logo y formato de alta formalidad)
+    # HTML DEL CERTIFICADO (Identidad Visual PsychoMetric)
     html_final = f"""
     <div style="font-family: Arial, sans-serif; padding: 40px; border: 15px solid #1E40AF; background: white; color: #0F172A;">
         <h1 style="color: #1E40AF; text-align: center; font-size: 35px; margin-bottom: 5px;">PSYCHOMETRIC</h1>
-        <p style="text-align: center; font-weight: bold; color: #64748B;">SERVICIO DE DIGITALIZACIÓN Y ANÁLISIS CLÍNICO</p>
+        <p style="text-align: center; font-weight: bold; color: #64748B;">SERVICIO DE DIGITALIZACIÓN Y ANÁLISIS DE INDICADORES</p>
         <hr style="border: 1px solid #E2E8F0; margin: 20px 0;">
-        <h3 style="margin-top: 30px;">INFORME TÉCNICO DE RESULTADOS (DSM-5-TR):</h3>
-        <ul style="line-height: 1.8; font-size: 16px;">{items_html if items_html else "<li>No se detectaron indicadores significativos en la evaluación actual.</li>"}</ul>
-        <div style="margin-top: 60px; padding: 20px; background: #F8FAFC; border-radius: 8px; font-size: 12px; border: 1px solid #E2E8F0;">
-            <b>NOTA LEGAL:</b> Este documento es el resultado de un servicio de procesamiento y digitalización de datos psicométricos. 
-            Su propósito es estrictamente informativo y de apoyo a la gestión clínica. No sustituye el diagnóstico presencial de un profesional acreditado.
+        
+        <h3 style="margin-top: 30px; color: #1E40AF;">MAPEO DE INDICADORES CLÍNICOS TRANSVERSALES</h3>
+        <p style="font-size: 14px; color: #475569;">Protocolo de análisis basado en estándares internacionales de salud mental.</p>
+        
+        <ul style="line-height: 1.8; font-size: 16px; margin-top: 20px;">
+            {items_html if items_html else "<li>No se detectaron indicadores significativos en el procesamiento de datos actual.</li>"}
+        </ul>
+        
+        <div style="margin-top: 60px; padding: 20px; background: #F8FAFC; border-radius: 8px; font-size: 12px; border: 1px solid #E2E8F0; color: #475569;">
+            <b>NOTA DE DIGITALIZACIÓN:</b> Este documento representa el procesamiento técnico de la información suministrada por el usuario. 
+            Su validez es informativa y de soporte para la gestión profesional. No constituye una entrevista clínica ni un diagnóstico médico automatizado.
         </div>
-        <p style="text-align: center; font-size: 10px; margin-top: 20px; color: #94A3B8;">Folio Digital: PM-{id(res)}-CL</p>
+        <p style="text-align: center; font-size: 10px; margin-top: 20px; color: #94A3B8;">Código de Verificación: PM-2026-CHILE</p>
     </div>
     """
+    
     st.markdown("<div class='official-report'>", unsafe_allow_html=True)
     st.markdown(html_final, unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
     st.write("")
     st.download_button(
-        label="📥 DESCARGAR INFORME TÉCNICO CERTIFICADO (HTML/PDF)",
+        label="📥 DESCARGAR CERTIFICADO DE ANÁLISIS (HTML/PDF)",
         data=html_final,
-        file_name="Informe_Tecnico_PsychoMetric.html",
+        file_name="Analisis_Tecnico_PsychoMetric.html",
         mime="text/html"
     )
