@@ -1,26 +1,48 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import time
 import requests
 
-# --- 1. CONFIGURACIÓN ---
-st.set_page_config(page_title="PsychoMetric", page_icon="🧠", layout="centered")
+# --- 1. CONFIGURACIÓN DE PÁGINA ---
+st.set_page_config(page_title="PsychoMetric | Informe Clínico", page_icon="🧠", layout="centered")
 
-# --- 2. ESTILO ---
+# --- 2. ESTILO CSS PROFESIONAL (Anti-Modo Oscuro) ---
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap');
-    html, body, [class*="st-"] { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
-    .main-title { font-size: 42px; font-weight: 700; color: #1E293B; text-align: center; }
-    .sub-title { font-size: 14px; text-align: center; color: #64748B; letter-spacing: 3px; }
-    .hero-card { background: white; padding: 30px; border-radius: 15px; border: 1px solid #E2E8F0; }
-    .stButton>button { width: 100%; border-radius: 10px; height: 3.5em; background: #1E293B; color: white; font-weight: 700; }
-    .pay-button { display: block; text-align: center; background: #009EE3; color: white !important; padding: 15px; border-radius: 10px; font-weight: bold; text-decoration: none; }
+    .stApp { background-color: #F1F5F9 !important; }
+    h1, h2, h3, p, span, div, label, .stMarkdown { color: #1E293B !important; }
+    .hero-card {
+        background-color: #FFFFFF !important;
+        padding: 25px;
+        border-radius: 15px;
+        border: 1px solid #E2E8F0;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+    }
+    .pay-button {
+        display: block;
+        text-align: center;
+        background-color: #009EE3 !important;
+        color: white !important;
+        padding: 16px;
+        border-radius: 12px;
+        font-weight: bold;
+        font-size: 20px;
+        text-decoration: none;
+        margin: 20px 0;
+        box-shadow: 0 4px 15px rgba(0,158,227,0.3);
+    }
+    .stButton>button {
+        width: 100%;
+        border-radius: 10px;
+        background-color: #1E293B !important;
+        color: white !important;
+    }
+    hr { border-top: 1px solid #CBD5E1; }
     </style>
-    """, unsafe_allow_html=True) # AQUÍ ESTABA EL ERROR CORREGIDO
+    """, unsafe_allow_html=True)
 
-# --- 3. DATOS ---
+# --- 3. DICCIONARIO CLÍNICO Y PREGUNTAS ---
 PREGUNTAS_DSM5 = [
     {"id": 1, "dom": "Depresión", "txt": "Tener poco interés o placer en hacer las cosas."},
     {"id": 2, "dom": "Depresión", "txt": "Sentirse decaído(a), deprimido(a) o sin esperanzas."},
@@ -47,6 +69,22 @@ PREGUNTAS_DSM5 = [
     {"id": 23, "dom": "Sustancias", "txt": "Consumo excesivo de estimulantes (café, energéticas)."}
 ]
 
+INTERPRETACIONES = {
+    "Depresión": "Se observa tendencia a la anhedonia y bajo estado de ánimo.",
+    "Ira": "Los niveles de irritabilidad sugieren baja tolerancia a la frustración.",
+    "Manía": "Presencia de niveles elevados de energía o autoconfianza expansiva.",
+    "Ansiedad": "Se detectan indicadores de tensión y preocupación constante.",
+    "Sint. Físicos": "Manifestaciones somáticas (dolores o fatiga) sin causa médica aparente.",
+    "Riesgo": "ALERTA: Ideación autolítica detectada. Requiere supervisión profesional URGENTE.",
+    "Psicosis": "Reporte de experiencias atípicas. Se sugiere evaluación psiquiátrica.",
+    "Sueño": "Calidad del descanso comprometida, afectando la recuperación diaria.",
+    "Memoria": "Dificultades en procesos de concentración y memoria operativa.",
+    "Pens. Repetitivos": "Presencia de rumiación mental o conductas recurrentes.",
+    "Disociación": "Sensación de distanciamiento del entorno o despersonalización.",
+    "Personalidad": "Dificultades en el establecimiento de vínculos interpersonales.",
+    "Sustancias": "Indicadores de consumo de sustancias como mecanismo de afrontamiento."
+}
+
 if 'etapa' not in st.session_state: st.session_state.etapa = 'landing'
 
 def enviar_big_data(payload):
@@ -54,44 +92,76 @@ def enviar_big_data(payload):
     try: requests.post(url, json=payload, timeout=3)
     except: pass
 
-# --- 4. NAVEGACIÓN ---
+# --- 4. FLUJO DE NAVEGACIÓN ---
+
+# LANDING
 if st.session_state.etapa == 'landing':
-    st.markdown("<h1 class='main-title'>PSYCHOMETRIC</h1>", unsafe_allow_html=True)
-    st.markdown("<p class='sub-title'>PRECISE MENTAL INSIGHTS</p>", unsafe_allow_html=True)
-    st.markdown("<div class='hero-card'><h3>Evaluación Clínica DSM-5</h3><p>Protocolo oficial para tamizaje de salud mental.</p></div>", unsafe_allow_html=True)
-    if st.button("INICIAR EVALUACIÓN"): 
+    st.markdown("<h1 style='text-align:center;'>PSYCHO<span style='color:#2563EB'>METRIC</span></h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; letter-spacing:2px; font-weight:bold;'>PRECISE MENTAL INSIGHTS</p>", unsafe_allow_html=True)
+    st.markdown("<div class='hero-card'><h3>Evaluación Clínica DSM-5-TR</h3><p>Obtenga un perfil profesional de salud mental analizado por dominios clínicos.</p></div>", unsafe_allow_html=True)
+    if st.button("COMENZAR EVALUACIÓN GRATUITA"):
         st.session_state.etapa = 'test'
         st.rerun()
 
+# TEST
 elif st.session_state.etapa == 'test':
+    st.markdown("### Escala Transversal de Síntomas")
     respuestas = {}
     for p in PREGUNTAS_DSM5:
-        st.write(f"**{p['id']}. {p['txt']}**")
-        respuestas[p['id']] = st.select_slider("Frecuencia", options=[0,1,2,3], format_func=lambda x: ["Nunca", "Varios días", "Más de la mitad", "Casi diario"][x], key=f"q_{p['id']}")
-    if st.button("FINALIZAR"):
+        st.markdown(f"**{p['id']}. {p['txt']}**")
+        respuestas[p['id']] = st.select_slider("Nivel", options=[0,1,2,3], format_func=lambda x: ["Nunca", "Leve", "Moderado", "Grave"][x], key=f"q_{p['id']}")
+        st.write("---")
+    if st.button("FINALIZAR Y GENERAR PERFIL"):
         st.session_state.respuestas = respuestas
         enviar_big_data({f"item_{k}": v for k, v in respuestas.items()})
         st.session_state.etapa = 'checkout'
         st.rerun()
 
+# CHECKOUT
 elif st.session_state.etapa == 'checkout':
-    st.markdown("### Perfil Generado")
+    st.markdown("### Su Perfil Psicométrico")
     res = st.session_state.respuestas
-    dominios_res = {}
-    for p in PREGUNTAS_DSM5:
-        if p['dom'] not in dominios_res: dominios_res[p['dom']] = []
-        dominios_res[p['dom']].append(res[p['id']])
+    dominios_res = {p['dom']: [] for p in PREGUNTAS_DSM5}
+    for p in PREGUNTAS_DSM5: dominios_res[p['dom']].append(res[p['id']])
+    
     df = pd.DataFrame([{"Dom": k, "Val": sum(v)/len(v)} for k, v in dominios_res.items()])
     fig = px.line_polar(df, r='Val', theta='Dom', line_close=True, range_r=[0,3])
-    st.plotly_chart(fig)
-    st.markdown('<a href="https://link.mercadopago.cl/saludmentalsana" target="_blank" class="pay-button">PAGAR $990 Y VER INFORME</a>', unsafe_allow_html=True)
-    if st.button("YA PAGUÉ - VER REPORTE"):
+    st.plotly_chart(fig, use_container_width=True)
+    
+    st.markdown(f"""
+        <div class='hero-card' style='text-align:center;'>
+            <h3>Informe Clínico Detallado</h3>
+            <p>Acceda a la redacción técnica de sus resultados para uso profesional.</p>
+            <h2 style='color:#1E293B;'>$990 CLP</h2>
+            <a href="https://link.mercadopago.cl/saludmentalsana" target="_blank" class="pay-button">PAGAR PARA DESBLOQUEAR</a>
+        </div>
+    """, unsafe_allow_html=True)
+    if st.button("YA PAGUÉ - VER MI INFORME"):
         st.session_state.etapa = 'reporte'
         st.rerun()
 
+# REPORTE REDACTADO
 elif st.session_state.etapa == 'reporte':
-    st.success("Informe Desbloqueado")
-    st.write("Resultados procesados según estándares clínicos.")
-    if st.button("VOLVER AL INICIO"):
+    st.balloons()
+    st.markdown("<h2 style='text-align:center;'>📄 Informe de Resultados</h2>", unsafe_allow_html=True)
+    
+    res = st.session_state.respuestas
+    dominios_res = {p['dom']: [] for p in PREGUNTAS_DSM5}
+    for p in PREGUNTAS_DSM5: dominios_res[p['dom']].append(res[p['id']])
+
+    texto_informe = "INFORME PSYCHOMETRIC - DSM-5\n\n"
+    
+    for dom, valores in dominios_res.items():
+        avg = sum(valores)/len(valores)
+        if avg >= 1:
+            color = "#E11D48" if avg >= 2 else "#0369A1"
+            st.markdown(f"<div style='background:white; padding:15px; border-radius:10px; border-left:5px solid {color}; margin-bottom:10px;'><b>{dom}:</b> {INTERPRETACIONES[dom]}</div>", unsafe_allow_html=True)
+            texto_informe += f"- {dom}: {INTERPRETACIONES[dom]}\n"
+        else:
+            st.write(f"✅ {dom}: Sin hallazgos significativos.")
+
+    st.markdown("---")
+    st.download_button(label="📥 DESCARGAR MI INFORME (.TXT)", data=texto_informe, file_name="Informe_PsychoMetric.txt")
+    if st.button("SALIR"):
         st.session_state.etapa = 'landing'
         st.rerun()
