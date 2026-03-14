@@ -1,21 +1,20 @@
 import streamlit as st
-import pandas as pd
 
-# --- 1. CONFIGURACIÓN ---
+# --- 1. CONFIGURACIÓN DE PÁGINA ---
 st.set_page_config(page_title="PsychoMetric | Inteligencia Clínica", page_icon="🧠", layout="centered")
 
-# --- 2. CSS REPARADO (LEGIBILIDAD Y CAJAS BLANCAS) ---
+# --- 2. CSS CONSOLIDADO (LEGIBILIDAD Y DISEÑO DE CAJAS) ---
 st.markdown("""
     <style>
     .stApp { background-color: #FFFFFF !important; }
     
-    /* Forzar legibilidad: Letras oscuras siempre */
+    /* Tipografía y Color de Fuente (Legibilidad 100%) */
     h1, h2, h3, h4, p, li, label, span, div { 
         color: #0F172A !important; 
         font-family: 'Inter', sans-serif !important; 
     }
 
-    /* Tarjetas de Landing */
+    /* Tarjetas de la Landing Page */
     .feature-card {
         background-color: #F8FAFC !important;
         padding: 20px !important;
@@ -25,7 +24,7 @@ st.markdown("""
         margin-bottom: 15px !important;
     }
 
-    /* Caja de Hallazgos Blanca con Borde Azul (Reparada) */
+    /* Caja de Resultados Blanca con Borde Azul (Formato Certificado) */
     .result-box {
         background-color: #FFFFFF !important;
         padding: 18px 25px !important;
@@ -34,7 +33,6 @@ st.markdown("""
         margin-bottom: 20px !important;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
         border: 1px solid #E2E8F0 !important;
-        border-left: 8px solid #1E40AF !important;
     }
     
     .check-positive { color: #059669 !important; font-weight: 500; margin-left: 10px; margin-bottom: 10px; }
@@ -53,7 +51,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. INTERPRETACIONES ORIGINALES ---
+# --- 3. BASE DE DATOS: INTERPRETACIONES Y CUESTIONARIO ---
 INTERPRETACIONES = {
     "Depresión": "Tendencia a la anhedonia y bajo estado de ánimo persistente.",
     "Ira": "Baja tolerancia a la frustración e indicadores de irritabilidad.",
@@ -70,7 +68,6 @@ INTERPRETACIONES = {
     "Sustancias": "Indicadores de consumo de sustancias como mecanismo de afrontamiento."
 }
 
-# --- 4. PREGUNTAS (PARAFRASEADAS) ---
 PREGUNTAS = [
     {"id": 1, "dom": "Depresión", "txt": "¿Ha notado una reducción en el interés por sus actividades?"},
     {"id": 2, "dom": "Depresión", "txt": "¿Se ha sentido con el ánimo bajo la mayor parte del día?"},
@@ -97,7 +94,7 @@ PREGUNTAS = [
     {"id": 23, "dom": "Sustancias", "txt": "¿Depende de estimulantes para su rutina diaria?"}
 ]
 
-# --- 5. LÓGICA DE NAVEGACIÓN ---
+# --- 4. FLUJO DE NAVEGACIÓN ---
 if 'etapa' not in st.session_state: st.session_state.etapa = 'landing'
 
 if st.session_state.etapa == 'landing':
@@ -140,14 +137,8 @@ elif st.session_state.etapa == 'reporte':
     st.markdown("<h2 style='text-align:center;'>Mapeo de Indicadores Clínicos</h2>", unsafe_allow_html=True)
     st.write("")
 
-    # Datos para el gráfico
-    grafico_data = []
-
-    # Renderizado del Informe (Cajas blancas legibles)
     for dom, puntos in dom_puntos.items():
         avg = sum(puntos)/len(puntos)
-        grafico_data.append({"Dominio": dom, "Intensidad": avg})
-        
         if avg >= 1:
             st.markdown(f"""
                 <div class='result-box'>
@@ -157,12 +148,6 @@ elif st.session_state.etapa == 'reporte':
             """, unsafe_allow_html=True)
         else:
             st.markdown(f"<p class='check-positive'>✅ {dom}: Sin hallazgos significativos.</p>", unsafe_allow_html=True)
-
-    # --- AGREGANDO EL GRÁFICO PROPUESTO ---
-    st.write("---")
-    st.markdown("### Resumen de Intensidad por Dominio")
-    df = pd.DataFrame(grafico_data)
-    st.bar_chart(df.set_index("Dominio"))
 
     st.write("---")
     st.download_button(
