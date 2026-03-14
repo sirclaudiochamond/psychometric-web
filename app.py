@@ -3,58 +3,28 @@ import pandas as pd
 import plotly.express as px
 import requests
 
-# --- 1. CONFIGURACIÓN DE PÁGINA ---
-st.set_page_config(page_title="PsychoMetric | Informe Oficial", page_icon="🧠", layout="centered")
+# --- 1. CONFIGURACIÓN ---
+st.set_page_config(page_title="PsychoMetric | Certificación", page_icon="🧠", layout="centered")
 
-# --- 2. ESTILO CSS MEJORADO (Botones y Colores) ---
+# --- 2. ESTILO CSS ---
 st.markdown("""
     <style>
     .stApp { background-color: #F8FAFC !important; }
-    
-    /* Forzar que todos los textos sean legibles */
     h1, h2, h3, p, span, div, label { color: #1E293B !important; }
     
-    /* BOTONES VISIBLES */
     .stButton>button {
-        width: 100% !important;
-        background-color: #1E293B !important;
-        color: #FFFFFF !important; /* TEXTO BLANCO */
-        border-radius: 12px !important;
-        height: 3.5em !important;
-        font-weight: bold !important;
-        border: none !important;
-        font-size: 16px !important;
+        width: 100%; background-color: #1E293B !important; color: #FFFFFF !important;
+        border-radius: 12px; height: 3.5em; font-weight: bold; border: none;
     }
     
-    /* BOTÓN DE DESCARGA (Download Button) */
     .stDownloadButton>button {
-        width: 100% !important;
-        background-color: #2563EB !important;
-        color: #FFFFFF !important;
-        border-radius: 12px !important;
-        font-weight: bold !important;
-        border: none !important;
+        width: 100%; background-color: #059669 !important; color: #FFFFFF !important;
+        border-radius: 12px; height: 3.5em; font-weight: bold; border: none;
     }
 
-    /* TARJETA DE INFORME TIPO CERTIFICADO */
     .report-card {
-        background-color: #FFFFFF !important;
-        padding: 40px;
-        border-radius: 8px;
-        border: 2px solid #E2E8F0;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        margin-top: 20px;
-        font-family: 'Courier New', Courier, monospace;
-    }
-
-    .disclaimer {
-        font-size: 11px !important;
-        color: #64748B !important;
-        text-align: justify;
-        line-height: 1.2;
-        margin-top: 20px;
-        border-top: 1px solid #E2E8F0;
-        padding-top: 10px;
+        background-color: #FFFFFF; padding: 40px; border-radius: 10px;
+        border: 2px solid #E2E8F0; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
     
     .pay-button {
@@ -65,7 +35,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. DATOS Y LÓGICA ---
+# --- 3. DATOS ---
 PREGUNTAS_DSM5 = [
     {"id": 1, "dom": "Depresión", "txt": "Tener poco interés o placer en hacer las cosas."},
     {"id": 2, "dom": "Depresión", "txt": "Sentirse decaído(a), deprimido(a) o sin esperanzas."},
@@ -95,98 +65,80 @@ PREGUNTAS_DSM5 = [
 INTERPRETACIONES = {
     "Depresión": "Tendencia a la anhedonia y bajo estado de ánimo persistente.",
     "Ira": "Baja tolerancia a la frustración e indicadores de irritabilidad.",
-    "Manía": "Niveles elevados de energía o autoconfianza expansiva.",
+    "Manía": "Niveles elevados de energía o expansividad.",
     "Ansiedad": "Indicadores de tensión psicomotriz y preocupación constante.",
-    "Sint. Físicos": "Manifestaciones somáticas sin causa médica clara.",
-    "Riesgo": "ALERTA CRÍTICA: Ideación autolítica detectada. Requiere ayuda inmediata.",
+    "Sint. Físicos": "Manifestaciones somáticas sin causa médica evidente.",
+    "Riesgo": "ALERTA CRÍTICA: Ideación autolítica. REQUIERE AYUDA INMEDIATA.",
     "Psicosis": "Experiencias perceptivas atípicas. Se sugiere evaluación.",
-    "Sueño": "Compromiso en la higiene del sueño y recuperación biológica.",
-    "Memoria": "Dificultades en procesos cognitivos y memoria operativa.",
-    "Pens. Repetitivos": "Rumiación mental o conductas de carácter recurrente.",
-    "Disociación": "Sensación de despersonalización o distanciamiento del entorno.",
-    "Personalidad": "Desafíos en el funcionamiento de vínculos interpersonales.",
-    "Sustancias": "Consumo de sustancias como mecanismo de regulación emocional."
+    "Sueño": "Compromiso en la higiene del sueño.",
+    "Memoria": "Dificultades en procesos de concentración.",
+    "Pens. Repetitivos": "Rumiación mental recurrente.",
+    "Disociación": "Sensación de distanciamiento del entorno.",
+    "Personalidad": "Desafíos en el funcionamiento de vínculos.",
+    "Sustancias": "Consumo de sustancias como mecanismo de regulación."
 }
 
 if 'etapa' not in st.session_state: st.session_state.etapa = 'landing'
 
-def enviar_big_data(payload):
-    url = "https://script.google.com/macros/s/AKfycbwxvDrvEtirRDJ_Qy84aPYWDukV4ylp-PDFPLh1pxJd6eevqnvt4hkGDJsrzheC0tlDAw/exec"
-    try: requests.post(url, json=payload, timeout=3)
-    except: pass
-
-# --- 4. FLUJO NAVEGACIÓN ---
+# --- 4. NAVEGACIÓN ---
 
 if st.session_state.etapa == 'landing':
     st.markdown("<h1 style='text-align:center;'>PSYCHO<span style='color:#2563EB'>METRIC</span></h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align:center; font-weight:bold;'>SISTEMA DE ANÁLISIS PSICOMÉTRICO V1.0</p>", unsafe_allow_html=True)
-    st.markdown("<div style='background:white; padding:20px; border-radius:10px; border:1px solid #E2E8F0;'><h3>Evaluación DSM-5-TR</h3><p>Protocolo profesional de tamizaje preventivo.</p></div>", unsafe_allow_html=True)
-    st.write("")
-    if st.button("COMENZAR TEST"):
+    st.markdown("<p style='text-align:center;'>ANÁLISIS CLÍNICO AVANZADO</p>", unsafe_allow_html=True)
+    if st.button("COMENZAR EVALUACIÓN"):
         st.session_state.etapa = 'test'
         st.rerun()
 
 elif st.session_state.etapa == 'test':
-    st.markdown("### Responda con sinceridad")
     res = {}
     for p in PREGUNTAS_DSM5:
         st.markdown(f"**{p['id']}. {p['txt']}**")
-        res[p['id']] = st.select_slider("Nivel", options=[0,1,2,3], format_func=lambda x: ["Nunca", "Leve", "Moderado", "Grave"][x], key=f"q_{p['id']}", label_visibility="collapsed")
-    if st.button("GENERAR RESULTADOS"):
+        res[p['id']] = st.select_slider("Nivel", options=[0,1,2,3], format_func=lambda x: ["Nunca", "Leve", "Moderado", "Grave"][x], key=f"q_{p['id']}")
+    if st.button("GENERAR REPORTE"):
         st.session_state.respuestas = res
-        enviar_big_data({f"item_{k}": v for k, v in res.items()})
         st.session_state.etapa = 'checkout'
         st.rerun()
 
 elif st.session_state.etapa == 'checkout':
-    st.markdown("### Perfil Psicométrico Generado")
-    # (Gráfico de radar se mantiene aquí para mostrar avance)
-    st.markdown("<div style='background:white; padding:20px; border-radius:10px; text-align:center;'><h4>Informe Completo Listo</h4><p>Pague para desbloquear la interpretación técnica y descargar su certificado.</p><h2 style='color:#2563EB;'>$990 CLP</h2><a href='https://link.mercadopago.cl/saludmentalsana' target='_blank' class='pay-button'>PAGAR CON MERCADO PAGO</a></div>", unsafe_allow_html=True)
-    if st.button("YA PAGUÉ - VER INFORME"):
+    st.markdown("<div style='text-align:center;'><h2>Informe Listo</h2><p>Acceda a su certificado oficial diseñado.</p><a href='https://link.mercadopago.cl/saludmentalsana' class='pay-button'>PAGAR $990</a></div>", unsafe_allow_html=True)
+    if st.button("VER INFORME DESBLOQUEADO"):
         st.session_state.etapa = 'reporte'
         st.rerun()
 
 elif st.session_state.etapa == 'reporte':
     st.balloons()
-    
-    # CONSTRUCCIÓN VISUAL DEL INFORME
     res = st.session_state.respuestas
     dominios_res = {p['dom']: [] for p in PREGUNTAS_DSM5}
     for p in PREGUNTAS_DSM5: dominios_res[p['dom']].append(res[p['id']])
 
-    st.markdown("""
-        <div class='report-card'>
-            <h2 style='text-align:center; color:#1E293B;'>PSYCHOMETRIC OFFICIAL REPORT</h2>
-            <p style='text-align:center; font-size:12px;'>ID: PRO-CH-2026 | CERTIFICADO DE TAMIZAJE</p>
-            <hr>
-            <h4>RESULTADOS POR DOMINIO CLÍNICO:</h4>
-    """, unsafe_allow_html=True)
-    
-    texto_para_descarga = "CERTIFICADO PSYCHOMETRIC - RESULTADOS\n" + "="*40 + "\n\n"
-    
+    # --- GENERADOR DE HTML PROFESIONAL ---
+    items_html = ""
     for dom, valores in dominios_res.items():
         avg = sum(valores)/len(valores)
-        status = "NORMAL"
-        if avg >= 2: status = "ELEVADO"
-        elif avg >= 1: status = "MODERADO"
-        
         if avg >= 1:
-            st.markdown(f"**{dom} [{status}]:** {INTERPRETACIONES[dom]}")
-            texto_para_descarga += f"[{status}] {dom}: {INTERPRETACIONES[dom]}\n"
-        else:
-            st.markdown(f"<span style='color:#94A3B8;'>✓ {dom}: Sin hallazgos.</span>", unsafe_allow_html=True)
+            items_html += f"<li><b>{dom}:</b> {INTERPRETACIONES[dom]}</li>"
 
-    st.markdown("""
-            <div class='disclaimer'>
-                <b>DESCARGO DE RESPONSABILIDAD:</b> Este documento es un resultado automatizado basado en el protocolo DSM-5-TR Nivel 1. 
-                No constituye un diagnóstico médico o psiquiátrico definitivo. Se recomienda compartir estos resultados con su 
-                profesional de salud mental de confianza para una evaluación clínica integral.
-            </div>
+    html_certificado = f"""
+    <div style="font-family: Arial; border: 10px solid #2563EB; padding: 40px; color: #1E293B;">
+        <h1 style="color: #2563EB; text-align: center;">PSYCHOMETRIC</h1>
+        <h3 style="text-align: center; border-bottom: 2px solid #E2E8F0; padding-bottom: 10px;">CERTIFICADO OFICIAL DE RESULTADOS</h3>
+        <p>Este documento certifica los hallazgos del protocolo DSM-5-TR.</p>
+        <ul>{items_html}</ul>
+        <div style="margin-top: 50px; font-size: 10px; color: #64748B;">
+            <b>AVISO LEGAL:</b> Este reporte es informativo. No reemplaza un diagnóstico profesional.
         </div>
-    """, unsafe_allow_html=True)
+    </div>
+    """
 
-    st.write("")
-    st.download_button(label="📥 DESCARGAR CERTIFICADO OFICIAL (.TXT)", data=texto_para_descarga, file_name="Certificado_PsychoMetric.txt")
-    if st.button("FINALIZAR"):
+    st.markdown(html_certificado, unsafe_allow_html=True)
+    
+    st.download_button(
+        label="📥 DESCARGAR CERTIFICADO PREMIUM (HTML)",
+        data=html_certificado,
+        file_name="Certificado_PsychoMetric.html",
+        mime="text/html"
+    )
+    
+    if st.button("VOLVER AL INICIO"):
         st.session_state.etapa = 'landing'
         st.rerun()
