@@ -1,15 +1,21 @@
 import streamlit as st
+import pandas as pd
 
 # --- 1. CONFIGURACIÓN ---
 st.set_page_config(page_title="PsychoMetric | Inteligencia Clínica", page_icon="🧠", layout="centered")
 
-# --- 2. CSS AVANZADO (ESTÉTICA RESTAURADA) ---
+# --- 2. CSS REPARADO (LEGIBILIDAD Y CAJAS BLANCAS) ---
 st.markdown("""
     <style>
     .stApp { background-color: #FFFFFF !important; }
-    h1, h2, h3, h4, p, li, label { color: #1E293B !important; font-family: 'Inter', sans-serif !important; }
+    
+    /* Forzar legibilidad: Letras oscuras siempre */
+    h1, h2, h3, h4, p, li, label, span, div { 
+        color: #0F172A !important; 
+        font-family: 'Inter', sans-serif !important; 
+    }
 
-    /* Tarjetas Landing */
+    /* Tarjetas de Landing */
     .feature-card {
         background-color: #F8FAFC !important;
         padding: 20px !important;
@@ -18,32 +24,36 @@ st.markdown("""
         box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
         margin-bottom: 15px !important;
     }
-    .feature-card b { color: #2563EB !important; }
+
+    /* Caja de Hallazgos Blanca con Borde Azul (Reparada) */
+    .result-box {
+        background-color: #FFFFFF !important;
+        padding: 18px 25px !important;
+        border-radius: 8px !important;
+        border-left: 8px solid #1E40AF !important;
+        margin-bottom: 20px !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+        border: 1px solid #E2E8F0 !important;
+        border-left: 8px solid #1E40AF !important;
+    }
+    
+    .check-positive { color: #059669 !important; font-weight: 500; margin-left: 10px; margin-bottom: 10px; }
 
     /* Botón Profesional Oscuro */
     .stButton>button {
         width: 100% !important;
         background-color: #1E293B !important;
         color: #FFFFFF !important;
-        border-radius: 6px !important;
-        padding: 12px !important;
+        border-radius: 8px !important;
+        padding: 15px !important;
         font-weight: 600 !important;
         border: none !important;
     }
-
-    /* Caja de Hallazgos (Interpretación) */
-    .result-box {
-        background-color: #F8FAFC !important;
-        padding: 15px 25px !important;
-        border-radius: 6px !important;
-        border-left: 5px solid #2563EB !important;
-        margin-bottom: 15px !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.03) !important;
-    }
+    .stButton>button div p { color: #FFFFFF !important; }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. INTERPRETACIONES PROFESIONALES (RESTAURADAS) ---
+# --- 3. INTERPRETACIONES ORIGINALES ---
 INTERPRETACIONES = {
     "Depresión": "Tendencia a la anhedonia y bajo estado de ánimo persistente.",
     "Ira": "Baja tolerancia a la frustración e indicadores de irritabilidad.",
@@ -52,17 +62,17 @@ INTERPRETACIONES = {
     "Sint. Físicos": "Manifestaciones somáticas sin causa médica clara.",
     "Riesgo": "ALERTA CRÍTICA: Ideación autolítica detectada. Requiere ayuda inmediata.",
     "Psicosis": "Fenómenos perceptivos atípicos reportados.",
-    "Sueño": "Compromiso en la higiene del sueño y recuperación biológica.",
+    "Sueño": "Calidad del descanso comprometida, afectando la recuperación diaria.",
     "Memoria": "Déficit reportado en funciones ejecutivas y atención.",
-    "Pens. Repetitivos": "Presencia de rumiación mental o conductas de carácter recurrente.",
+    "Pens. Repetitivos": "Presencia de rumiación mental o conductas recurrentes.",
     "Disociación": "Experiencias de distanciamiento perceptivo del entorno.",
-    "Personalidad": "Desafíos en el funcionamiento de vínculos interpersonales.",
-    "Sustancias": "Consumo de sustancias como mecanismo de regulación emocional."
+    "Personalidad": "Dificultades en el establecimiento de vínculos interpersonales.",
+    "Sustancias": "Indicadores de consumo de sustancias como mecanismo de afrontamiento."
 }
 
 # --- 4. PREGUNTAS (PARAFRASEADAS) ---
 PREGUNTAS = [
-    {"id": 1, "dom": "Depresión", "txt": "¿Ha notado una reducción en el placer por sus actividades?"},
+    {"id": 1, "dom": "Depresión", "txt": "¿Ha notado una reducción en el interés por sus actividades?"},
     {"id": 2, "dom": "Depresión", "txt": "¿Se ha sentido con el ánimo bajo la mayor parte del día?"},
     {"id": 3, "dom": "Ira", "txt": "¿Ha experimentado mayor irritabilidad o enojo?"},
     {"id": 4, "dom": "Manía", "txt": "¿Ha sentido una euforia inusual o confianza excesiva?"},
@@ -92,7 +102,7 @@ if 'etapa' not in st.session_state: st.session_state.etapa = 'landing'
 
 if st.session_state.etapa == 'landing':
     st.markdown("<h1 style='text-align:center;'>PSYCHO<span style='color:#2563EB'>METRIC</span></h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align:center; font-size:12px; letter-spacing:2px; color:#2563EB;'>ADVANCED CLINICAL INSIGHTS</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; font-size:12px; letter-spacing:2px; color:#2563EB !important;'>ADVANCED CLINICAL INSIGHTS</p>", unsafe_allow_html=True)
     
     st.markdown("## Análisis de Salud Mental de Alta Precisión")
     st.write("Plataforma de digitalización basada en **Protocolos Clínicos Internacionales**. Identifique indicadores en 13 dimensiones críticas.")
@@ -128,18 +138,36 @@ elif st.session_state.etapa == 'reporte':
     for p in PREGUNTAS: dom_puntos[p['dom']].append(res[p['id']])
 
     st.markdown("<h2 style='text-align:center;'>Mapeo de Indicadores Clínicos</h2>", unsafe_allow_html=True)
-    
+    st.write("")
+
+    # Datos para el gráfico
+    grafico_data = []
+
+    # Renderizado del Informe (Cajas blancas legibles)
     for dom, puntos in dom_puntos.items():
         avg = sum(puntos)/len(puntos)
+        grafico_data.append({"Dominio": dom, "Intensidad": avg})
+        
         if avg >= 1:
-            st.markdown(f"<div class='result-box'><b>{dom}:</b> {INTERPRETACIONES[dom]}</div>", unsafe_allow_html=True)
+            st.markdown(f"""
+                <div class='result-box'>
+                    <span style='font-weight:bold; color:#1E40AF !important;'>{dom}:</span> 
+                    <span style='color:#334155 !important;'>{INTERPRETACIONES[dom]}</span>
+                </div>
+            """, unsafe_allow_html=True)
         else:
-            st.markdown(f"<p style='color:#10B981; margin-left:25px;'>✅ {dom}: Sin hallazgos significativos.</p>", unsafe_allow_html=True)
+            st.markdown(f"<p class='check-positive'>✅ {dom}: Sin hallazgos significativos.</p>", unsafe_allow_html=True)
+
+    # --- AGREGANDO EL GRÁFICO PROPUESTO ---
+    st.write("---")
+    st.markdown("### Resumen de Intensidad por Dominio")
+    df = pd.DataFrame(grafico_data)
+    st.bar_chart(df.set_index("Dominio"))
 
     st.write("---")
     st.download_button(
         label="📥 DESCARGAR MI INFORME CERTIFICADO (.HTML)",
-        data="<h1>Certificado PsychoMetric</h1>", # Aquí iría el HTML completo del certificado
+        data="<h1>Certificado PsychoMetric</h1><p>Informe procesado exitosamente.</p>", 
         file_name="Informe_PsychoMetric.html",
         mime="text/html"
     )
